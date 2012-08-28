@@ -35,6 +35,14 @@ namespace Lab1.Model
             {
                 SetDefaultParserState();
             }*/
+        
+        private Repository.Repository repo;
+
+        public InputParser(Repository.Repository repo)
+        {
+            this.repo = repo;
+        }
+
         State ParseState = State.Default;
         private enum State
         {

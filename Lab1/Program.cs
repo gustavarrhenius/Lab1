@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Lab1.Helpers;
 using Lab1.Model;
+using Lab1.Model.Repository;
 
 namespace Lab1
 {
@@ -16,7 +17,8 @@ namespace Lab1
             // input används för att hålla input från användaren.
             string input;
             // ett InputParser-objekt som har till uppgift att tolka och utföra kommandon från användaren.
-            InputParser inputParser = new InputParser();
+            Repository repo = new Repository();
+            InputParser inputParser = new InputParser(repo);
             // parseResult används för att hålla resultatet av en tolkning från inputParser
             string parseResult;
 
@@ -37,5 +39,7 @@ namespace Lab1
                     exit = true;
             }
         }
+
+        public static object repo { get; set; }
     }
 }

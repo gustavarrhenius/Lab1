@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ChangeMe.Model.Repository.Abstract;
+using Lab1.Model.Repository.Abstract;
 
-namespace ChangeMe.Model.Repository
+namespace Lab1.Model.Repository
 {
     /// <summary>
     /// Klass som hanterar data för applikationen

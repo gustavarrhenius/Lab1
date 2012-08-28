@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ChangeMe.Model
+namespace Lab1.Model
 {
     /// <summary>
     /// Klass för att representera t.ex. en bloggpost eller en forumpost.

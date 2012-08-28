@@ -79,5 +79,10 @@ namespace Lab1.Helpers
                 return string.Format("\n\nWelcome! {0}", EnterCommand);
             }
         }
+
+        public static void Put(String PutString)
+        {
+            Console.WriteLine(PutString);
+        }
     }
 }

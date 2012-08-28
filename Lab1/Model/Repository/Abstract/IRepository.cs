@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ChangeMe.Model.Repository.Abstract
+namespace Lab1.Model.Repository.Abstract
 {
     /// <summary>
     /// Interface för Repository
