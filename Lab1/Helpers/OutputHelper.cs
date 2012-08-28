@@ -72,7 +72,7 @@ namespace Lab1.Helpers
         /// <summary>
         /// Property som innehåller ett välkomstmeddelande
         /// </summary>
-        private static string GreetingMessage
+        public static string GreetingMessage
         {
             get
             {

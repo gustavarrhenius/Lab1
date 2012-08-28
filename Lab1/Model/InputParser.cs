@@ -27,46 +27,20 @@ namespace Lab1.Model
         /// Och -1 som är det tillståndet som InputParser går in i när programmet skall avslutas
         /// Ifall nya tillstånd implementeras skulle de kunna vara 2, 3, 4, etc.
         /// </summary>
-        private int ParserState { get; set; }
-
-        /// <summary>
-        /// Sätter ParserState till Default
-        /// </summary>
-        public void SetDefaultParserState()
-        {
-            ParserState = 1;
-        }
-
-        /// <summary>
-        /// Returnerar en int som motsvarar Default State
-        /// </summary>
-        private int DefaultParserState
-        {
-            get
+        /*
+         * 
+         * Fråga 1
+         *  private int ParserState { get; set; }
+            public InputParser()
             {
-                return 1;
-            }
-        }
-
-        /// <summary>
-        /// Sätter ParserState till Exit
-        /// </summary>
-        private void SetExitParserState()
+                SetDefaultParserState();
+            }*/
+        State ParseState = State.Default;
+        private enum State
         {
-            ParserState = -1;
+            Default,
+            Exit
         }
-
-        /// <summary>
-        /// Returnerar en int som motsvarar Exit State
-        /// </summary>
-        private int ExitParserState
-        {
-            get
-            {
-                return -1;
-            }
-        }
-
         /// <summary>
         /// Returnerar true om ParserState är Exit (eller rättare sagt -1)
         /// </summary>
@@ -74,7 +48,7 @@ namespace Lab1.Model
         {
             get
             {
-                return ParserState == ExitParserState;
+                return ParseState == State.Exit;
             }
         }
 
@@ -85,18 +59,18 @@ namespace Lab1.Model
         /// <returns></returns>
         public string ParseInput(string input)
         {
-            if (ParserState == DefaultParserState)
+            if (ParseState == State.Default)
             {
                 return ParseDefaultStateInput(input);
             }
-            else if (ParserState == ExitParserState)
+            else if (ParseState == State.Exit)
             {
                 // Do nothing - program should exit
                 return "";
             }
             else
             {
-                SetDefaultParserState();
+                ParseState = State.Default;
                 return OutputHelper.ErrorLostState;
             }
         }
@@ -116,7 +90,7 @@ namespace Lab1.Model
                     result = OutputHelper.RootCommandList;
                     break;
                 case "exit":
-                    SetExitParserState(); // Lägg märke till att vi utför en Action här.
+                    ParseState = State.Exit; // Lägg märke till att vi utför en Action här.
                     result = OutputHelper.ExitMessage("Bye!"); // Det går bra att skicka parametrar
                     break;
                 default:

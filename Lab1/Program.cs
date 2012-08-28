@@ -17,11 +17,10 @@ namespace Lab1
             string input;
             // ett InputParser-objekt som har till uppgift att tolka och utföra kommandon från användaren.
             InputParser inputParser = new InputParser();
-            inputParser.SetDefaultParserState(); // Se Beskrivning av ParserState i InputParser-klassen.
             // parseResult används för att hålla resultatet av en tolkning från inputParser
             string parseResult;
 
-            Console.WriteLine("\n\nEnter command + [enter] (help: ?):");
+            Console.WriteLine(OutputHelper.GreetingMessage);
             while (!exit)
             {
                 // Hämta input från användaren
