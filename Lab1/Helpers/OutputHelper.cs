@@ -19,8 +19,12 @@ namespace Lab1.Helpers
             {
                 string returnString = "\n\nList of Commands:";
                 returnString += "\n\t?/help:\tPrints this list of commands.";
+                returnString += "\n\tlog:\tPrints the latest used commands.";
+                returnString += "\n\tfunc<int,bool>:\tPrints information about Lambda Expressions.";
+                returnString += "\n\tdictionary:\tPrints informaion about System.Collections.Generics.Dictionary";
+                returnString += "\n\tlist:\tPrints ten users formatted to strings";
+                returnString += "\n\tlistsorted:\tPrints ten users formatted to strings in Asc. order by name";
                 returnString += "\n\texit:\tExits the program.";
-
                 return returnString;
             }
         }
@@ -42,9 +46,11 @@ namespace Lab1.Helpers
         {
             get
             {
-                return string.Format("\n\nInvalid Input! (type (? or help) and [enter] for help.)");
+                return string.Format("\n\nInvalid Input! (help: ?) and [enter] for help.)");
             }
         }
+
+        Func<string, bool> isMoreThan10Chars = s => s.Length > 10;
 
         /// <summary>
         /// Property som innehåller felmeddelande som skall ges om programmet inte vet vilket
@@ -68,7 +74,14 @@ namespace Lab1.Helpers
                 return string.Format("\n\nPlease Enter command + [enter] (help: ?):");
             }
         }
-
+        public static string Dictionary
+        {
+            get
+            {
+                return string.Format("\n\nSystem.Collections.Generics.Dictionary has the interfaces ICollection, IDictionary and IEnumerable");
+            }
+        }
+        
         /// <summary>
         /// Property som innehåller ett välkomstmeddelande
         /// </summary>
@@ -80,9 +93,27 @@ namespace Lab1.Helpers
             }
         }
 
-        public static void Put(String PutString)
+        public static string FuncExplanation
         {
-            Console.WriteLine(PutString);
+            get
+            {
+                return string.Format("\nFunc<int,bool> är ett Lambda Expression som används direkt och kan hålla en INT och få tillbaka en bool som är true eller false beroende på vad funktionen ska kolla.\n" + 
+                    "Man kan även tilldela en delegate för att använda sig av funktionen igen via en variabel");
+            }
+        }
+
+        public static string HowMany
+        {
+             get
+            {
+                 return string.Format("\n\nHow Many Admins do you want? max(10)");
+            }
+           
+        }
+
+        public static string Put(string PutString)
+        {
+           return string.Format(PutString);
         }
     }
 }

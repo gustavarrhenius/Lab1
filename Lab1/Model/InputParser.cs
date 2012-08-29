@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Lab1.Helpers;
+using Lab1.Model;
 
 namespace Lab1.Model
 {
@@ -37,10 +38,13 @@ namespace Lab1.Model
             }*/
         
         private Repository.Repository repo;
-
+        private Logger logger = new Logger();
+        List<User> users;
+        
         public InputParser(Repository.Repository repo)
         {
             this.repo = repo;
+            this.users = repo.GetUsers();
         }
 
         State ParseState = State.Default;
@@ -67,6 +71,7 @@ namespace Lab1.Model
         /// <returns></returns>
         public string ParseInput(string input)
         {
+            logger.StringLog(input);
             if (ParseState == State.Default)
             {
                 return ParseDefaultStateInput(input);
@@ -91,7 +96,7 @@ namespace Lab1.Model
         private string ParseDefaultStateInput(string input)
         {
             string result;
-            switch (input)
+            switch (input.ToLower())
             {
                 case "?": // Inget break; eller return; => ramlar igenom till nästa case (dvs. ?/help hanteras likadant)
                 case "help":
@@ -101,11 +106,89 @@ namespace Lab1.Model
                     ParseState = State.Exit; // Lägg märke till att vi utför en Action här.
                     result = OutputHelper.ExitMessage("Bye!"); // Det går bra att skicka parametrar
                     break;
+                case "log":
+                    result = OutputHelper.Put(Log());
+                    break;
+                case "func<int,bool>":
+                    result = OutputHelper.FuncExplanation;
+                    break;
+                case "dictionary":
+                    result = OutputHelper.Dictionary;
+                    break;
+                case "list":
+                    result = OutputHelper.Put(UserToString(10));
+                    break;
+                case "listsorted":
+                    result = OutputHelper.Put(UserToStringAsc(10));
+                    break;
+                case "listadmin":
+                    result = OutputHelper.Put(UserToStringAdmin(HowMany()));
+                    break;
                 default:
                     result = OutputHelper.ErrorInvalidInput;
                     break;
             }
+            
             return result + OutputHelper.EnterCommand;
         }
+
+        public string Log()
+        {
+            return logger.ToString();
+        }
+
+        public int HowMany()
+        {
+            OutputHelper.Put("How Many? (Max 10)");
+            string input = InputHelper.GetUserInput();
+            OutputHelper.Put(input);
+            int x = 10;
+            try
+            {
+                x = Int32.Parse(input);
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            return x;
+        }
+
+        public string UserToString(int Nbr)
+        {
+            string UserListString = "";
+            foreach (var user in users.Take(Nbr)) {
+                UserListString += user.ToString() + "\n";
+            }
+            return UserListString;
+        }
+
+        public string UserToStringAsc(int Nbr)
+        {
+            string UserListString = "";
+            var query = from u in users
+                        where u.FirstName != ""
+                        orderby u.FirstName
+                        select u;
+            foreach (var user in query.Take(Nbr).ToList())
+            {
+                UserListString += user.ToString() + "\n";
+            }
+            return UserListString;
+        }
+        public string UserToStringAdmin(int Nbr)
+        {
+            string UserListString = "";
+            if (Nbr > 10) {
+                string ToMany = "Max 10 users! Not " + Nbr + "Users";
+                Nbr = 10;
+            }
+            foreach (var user in users.Take(Nbr).Where(u => u.Type == User.UserType.Admin))
+            {
+                UserListString += user.ToString() + "\n";
+            }
+            return UserListString;
+        }
+        
     }
 }

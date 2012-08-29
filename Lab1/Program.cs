@@ -21,16 +21,13 @@ namespace Lab1
             InputParser inputParser = new InputParser(repo);
             // parseResult används för att hålla resultatet av en tolkning från inputParser
             string parseResult;
-
             Console.WriteLine(OutputHelper.GreetingMessage);
             while (!exit)
             {
                 // Hämta input från användaren
                 input = InputHelper.GetUserInput();
-                
                 // Tolka Användarens input och tilldela resultatet av tolkningen till parseResult.
                 parseResult = inputParser.ParseInput(input);
-
                 // Skriv ut resultatet från tolkningen
                 Console.WriteLine(parseResult);
 

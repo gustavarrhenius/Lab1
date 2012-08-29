@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Helpers\InputHelper.cs" />
     <Compile Include="Helpers\OutputHelper.cs" />
+    <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\InputParser.cs" />
     <Compile Include="Model\Post.cs" />
     <Compile Include="Model\Repository\Abstract\IRepository.cs" />
