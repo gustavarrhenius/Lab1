@@ -6,24 +6,19 @@ using Lab1.Model.Repository.Abstract;
 
 namespace Lab1.Model.Repository
 {
-    /// <summary>
-    /// Klass som hanterar data för applikationen
-    /// </summary>
-    public class Repository : IRepository
-    {
-        // privata listor med User- och Post-objekt
-        private List<User> users;
-        private List<Post> posts;
 
-        /// <summary>
-        /// Konstruktor som genererar 36 dummy Users och 100 dummy Posts
-        /// </summary>
-        public Repository()
+    public class RealRepository : IRepository
+    {
+        protected List<User> users;
+        protected List<Post> posts;
+
+
+
+        //Konstruktor för users och posts som är tomma
+        public RealRepository()
         {
-            // Här inne genererar vi dummy-data. För denna lab behöver du inte veta hur denna data genereras.
-            List<Guid> UserIDs;
-            users = GenerateUsers(out UserIDs); // För nyckelordet 'out' se kommentar innan definitionen av GenerateUsers
-            posts = GeneratePosts(UserIDs);
+            users = new List<User>();
+            posts = new List<Post>();
         }
 
         /// <summary>
@@ -103,40 +98,20 @@ namespace Lab1.Model.Repository
             Post postToBeRemoved = posts.Where(p => p.PostID == postID).FirstOrDefault();
             posts.Remove(postToBeRemoved);
         }
+    }
 
-        // Nedan följer hjälpmetoder som genererar dummy-data för posts och users i konstruktorn ovan.
-        //
-        // OBS! Du behöver inte bry dig om hur dessa är implementerade för denna lab.
+    /// Klass som hanterar data för applikationen
 
-        // #region gör att allt fram till #endregion kan minimeras till en rad i Visual Studio.
-        // Detta nyckelord påverkar inte funktionen hos koden.
-        #region Private Helper Methods
+    public class FakeRepository : RealRepository, IRepository
+    {
+        public FakeRepository()
+        {
+            // Dummy data
+            List<Guid> UserIDs;
+            users = GenerateUsers(out UserIDs); 
+            posts = GeneratePosts(UserIDs);
+        }
 
-        /* OBS! Dessa hjälp-metoder är inte nödvändigtvis "Snygga" implementationer.
-         * 
-         * T.ex. så är de inte särskilt dynamiska (De genererar alltid 36 användare och 100 poster t.ex).
-         * Men pga att allting är utbrytet i små funktioner som alla har ett ansvarsområde, så skulle
-         * vi snabbt och lätt kunna köra refactoring på delar av dem för att göra dem effektivare eller mer dynamiska
-         * 
-         * Ifall ni vill experimentera lite så skulle ni t.ex. kunna skriva om funktionerna så att de
-         * genererar ett valfritt antal användare eller poster, etc.
-         */
-
-        /* Lägg märke till att parametern UserIDs föregås av nyckelordet 'out'. Detta innebär att det är en ut-parameter
-         * 
-         * Detta innebär att när jag tilldelar något till UserIDs i denna funktion så
-         * kommer det tilldelade värdet vara tillgängligt utanför funktionen
-         * 
-         * I det här fallet använder jag 'out' för att jag vill initiera UserIDs i denna metoden och sedan
-         * skicka med den initierade-listan till GeneratePosts för att kunna sätta giltiga UserIDs på
-         * de Posts jag skapar där. 
-         * 
-         * Ett alternativ till detta i just det här fallet hade varit att utifrån den returnerade listan
-         * av Users skapa en ny lista bestående av enbart UserIDs. (Detta skulle kunna göras med en Select
-         * i ett Linq-uttryck).
-         * 
-         * Ifall ni vill veta mer: sök på nyckelordet 'out' eller 'pass by reference'/'call by reference'
-         */
         private List<User> GenerateUsers(out List<Guid> UserIDs)
         {
             int numberOfUsers = 36;
@@ -389,6 +364,5 @@ namespace Lab1.Model.Repository
             return tagList;
         }
 
-        #endregion
     }
 }

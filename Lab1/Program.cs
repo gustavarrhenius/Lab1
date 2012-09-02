@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Lab1.Helpers;
 using Lab1.Model;
+using Lab1.Infrastructure;
 using Lab1.Model.Repository;
 
 namespace Lab1
@@ -16,12 +17,11 @@ namespace Lab1
             bool exit = false;
             // input används för att hålla input från användaren.
             string input;
-            // ett InputParser-objekt som har till uppgift att tolka och utföra kommandon från användaren.
-            Repository repo = new Repository();
-            InputParser inputParser = new InputParser(repo);
+            var Repo = new Model.Repository.FakeRepository();
+            InputParser inputParser = new InputParser(Repo);
             // parseResult används för att hålla resultatet av en tolkning från inputParser
             string parseResult;
-            Console.WriteLine(OutputHelper.GreetingMessage);
+            OutputHelper.Put(OutputHelper.GreetingMessage);
             while (!exit)
             {
                 // Hämta input från användaren
@@ -29,14 +29,11 @@ namespace Lab1
                 // Tolka Användarens input och tilldela resultatet av tolkningen till parseResult.
                 parseResult = inputParser.ParseInput(input);
                 // Skriv ut resultatet från tolkningen
-                Console.WriteLine(parseResult);
-
+                OutputHelper.Put(parseResult);
                 // Avsluta programmet om inputParser är i tillståndet "Exit"
                 if (inputParser.IsStateExit)
                     exit = true;
             }
-        }
-
-        public static object repo { get; set; }
+        }   
     }
 }

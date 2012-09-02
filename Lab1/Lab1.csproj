@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\ExtensionMethods.cs" />
     <Compile Include="Helpers\InputHelper.cs" />
     <Compile Include="Helpers\OutputHelper.cs" />
+    <Compile Include="Model\Guest.cs" />
+    <Compile Include="Model\IUser.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\InputParser.cs" />
     <Compile Include="Model\Post.cs" />

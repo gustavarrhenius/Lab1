@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Lab1.Model
 {
-    public class User
+    public class User : IUser
     {
         public User() { }
         public User(string name, UserType type)
@@ -44,6 +44,12 @@ namespace Lab1.Model
                 userString += string.Format("\n\t\tUserName: '{0}' - UserType: '{1}'", UserName, Type);
             return userString;
         }
+
+        public override string ToString()
+        {
+            return ToString(true);
+        }
+
 
         public enum UserType
         {

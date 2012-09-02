@@ -5,6 +5,7 @@ using System.Text;
 using Lab1.Helpers;
 using Lab1.Model;
 
+
 namespace Lab1.Model
 {
     /// <summary>
@@ -36,25 +37,35 @@ namespace Lab1.Model
             {
                 SetDefaultParserState();
             }*/
-        
-        private Repository.Repository repo;
+
+        private Model.Repository.Abstract.IRepository repo;
         private Logger logger = new Logger();
         List<User> users;
-        
-        public InputParser(Repository.Repository repo)
+        List<Post> posts;
+        IUser InloggedUser = new Guest();
+        string UserName = "";
+        Int32 CurrentUser = 0;
+
+        private static bool IsUserAuthenticated = false;
+
+        //Konstruktor för InputParser
+        public InputParser(Model.Repository.Abstract.IRepository repo)
         {
             this.repo = repo;
             this.users = repo.GetUsers();
+            this.posts = repo.GetPosts();
+            
         }
-
         State ParseState = State.Default;
-        private enum State
+        private enum State 
         {
             Default,
+            Create,
+            ListUser,
             Exit
         }
         /// <summary>
-        /// Returnerar true om ParserState är Exit (eller rättare sagt -1)
+        /// Returnerar true om ParserState är Exit
         /// </summary>
         public bool IsStateExit
         {
@@ -76,9 +87,16 @@ namespace Lab1.Model
             {
                 return ParseDefaultStateInput(input);
             }
+            else if (ParseState == State.Create || IsUserAuthenticated)
+            {
+                return CreatUser(input);
+            }
+            else if (ParseState == State.ListUser)
+            {
+                return ListUser(input);
+            }
             else if (ParseState == State.Exit)
             {
-                // Do nothing - program should exit
                 return "";
             }
             else
@@ -95,7 +113,7 @@ namespace Lab1.Model
         /// <returns></returns>
         private string ParseDefaultStateInput(string input)
         {
-            string result;
+            string result = "";
             switch (input.ToLower())
             {
                 case "?": // Inget break; eller return; => ramlar igenom till nästa case (dvs. ?/help hanteras likadant)
@@ -107,7 +125,7 @@ namespace Lab1.Model
                     result = OutputHelper.ExitMessage("Bye!"); // Det går bra att skicka parametrar
                     break;
                 case "log":
-                    result = OutputHelper.Put(Log());
+                    OutputHelper.Put(Log());
                     break;
                 case "func<int,bool>":
                     result = OutputHelper.FuncExplanation;
@@ -116,19 +134,118 @@ namespace Lab1.Model
                     result = OutputHelper.Dictionary;
                     break;
                 case "list":
-                    result = OutputHelper.Put(UserToString(10));
+                    OutputHelper.Put(UserToStringAsc(10));
+                    ParseState = State.ListUser;
                     break;
                 case "listsorted":
-                    result = OutputHelper.Put(UserToStringAsc(10));
+                    OutputHelper.Put(UserToStringAsc(10));
                     break;
                 case "listadmin":
-                    result = OutputHelper.Put(UserToStringAdmin(HowMany()));
+                    OutputHelper.Put(UserToStringAdmin(10));
+                    break;
+                case "login admin":
+                    IsUserAuthenticated = true;
+                    InloggedUser = users.Where(u => u.Type == User.UserType.Admin).FirstOrDefault();
+                    OutputHelper.Put("You are now loggedin!");
+                    break;
+                case "logout":
+                    IsUserAuthenticated = false;
+                    OutputHelper.Put("Logged out");
+                    break;
+                case "create":
+                    if (IsUserAuthenticated) {
+                        OutputHelper.Put("Create new user by writing name:[X]");
+                        ParseState = State.Create;
+                    } else {
+                        OutputHelper.Put("You need to log in to creat a user!");
+                    }
+                    break;
+                case "listlatesttroll":
+                    OutputHelper.Put(ListLatestTroll());
                     break;
                 default:
                     result = OutputHelper.ErrorInvalidInput;
                     break;
             }
-            
+            return result + OutputHelper.EnterCommand;
+        }
+
+
+        //Create User State
+        private string CreatUser(string input)
+        {
+            string result = "";
+            switch (input.ToLower())
+            {
+                case "?": 
+                case "help":
+                    result = OutputHelper.AdminCommandList;
+                    break;
+                case "exit":
+                    ParseState = State.Exit; 
+                    result = OutputHelper.ExitMessage("Bye!");  
+                    break;
+                case "save":
+                    if (UserName != "")  {
+                        User newUser = new User();
+                        newUser.UserName = UserName;
+                        repo.AddUser(newUser);
+                        OutputHelper.Put("New user was created!");
+                    } else {
+                        OutputHelper.Put("Wrong username");
+                    }
+                    break;
+                case "cancel":
+                    OutputHelper.Put("you are now back in default state");
+                    ParseState = State.Default;
+                    break;
+                default:
+                    int InputNameStart = input.IndexOf(":");
+                    if (InputNameStart > 0) {
+                        UserName = input.Substring(InputNameStart + 1).Trim();
+                        OutputHelper.Put("If you want the username to be '" + UserName + "' write 'save' and the user will be created!");
+                    } else {
+                        result = OutputHelper.ErrorInvalidInput;
+                    } 
+                    break;
+            }
+
+            return result + OutputHelper.EnterCommand;
+        }
+
+        //ListUser State
+        private string ListUser(string input)
+        {
+            string result = "";
+            switch (input.ToLower())
+            {
+                case "?":
+                case "help":
+                    result = OutputHelper.AdminCommandList;
+                    break;
+                case "exit":
+                    ParseState = State.Exit; 
+                    result = OutputHelper.ExitMessage("Bye!"); 
+                    break;
+                case "back":
+                    OutputHelper.Put("You are now back in default state");
+                    ParseState = State.Default;
+                    CurrentUser = 0;
+                    break;
+                case "next":
+                    CurrentUser += 10;
+                    OutputHelper.Put(UserToStringAscNextPrev(CurrentUser));
+                    break;
+                case "prev":
+                    CurrentUser -= 10;
+                    if (CurrentUser <= 0) { CurrentUser = 0; }
+                    OutputHelper.Put(UserToStringAscNextPrev(CurrentUser));
+                    break;
+                default:
+                    result = OutputHelper.ErrorInvalidInput;
+                    break;
+            }
+
             return result + OutputHelper.EnterCommand;
         }
 
@@ -137,32 +254,17 @@ namespace Lab1.Model
             return logger.ToString();
         }
 
-        public int HowMany()
-        {
-            OutputHelper.Put("How Many? (Max 10)");
-            string input = InputHelper.GetUserInput();
-            OutputHelper.Put(input);
-            int x = 10;
-            try
-            {
-                x = Int32.Parse(input);
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            return x;
-        }
-
-        public string UserToString(int Nbr)
+        /*Fråga 12 **
+         * public string UserToString(int Nbr)
         {
             string UserListString = "";
             foreach (var user in users.Take(Nbr)) {
                 UserListString += user.ToString() + "\n";
             }
             return UserListString;
-        }
+        }*/
 
+        //Returnerar en lista på users i Asc order
         public string UserToStringAsc(int Nbr)
         {
             string UserListString = "";
@@ -176,18 +278,41 @@ namespace Lab1.Model
             }
             return UserListString;
         }
-        public string UserToStringAdmin(int Nbr)
+
+        //Returnerar en lista på users med next och prev funktionalitet
+        public string UserToStringAscNextPrev(int Current)
         {
             string UserListString = "";
-            if (Nbr > 10) {
-                string ToMany = "Max 10 users! Not " + Nbr + "Users";
-                Nbr = 10;
-            }
-            foreach (var user in users.Take(Nbr).Where(u => u.Type == User.UserType.Admin))
+            
+            var UsersList = users.Where(u => u.FirstName != "").OrderBy(u => u.FirstName).Skip(Current).Take(10);
+            if (UsersList.Count() <= 0)
             {
+                CurrentUser -= 10;
+                UsersList = users.Where(u => u.FirstName != "").OrderBy(u => u.FirstName).Skip(Current-10).Take(10);
+            }
+            foreach (var user in UsersList){
                 UserListString += user.ToString() + "\n";
             }
             return UserListString;
+        }
+
+        //Returnerar en lista på admins
+        public string UserToStringAdmin(int Nbr)
+        {
+            string UserListString = "";
+            int Admins = users.Where(u => u.Type == User.UserType.Admin).Count();
+            foreach (var user in users.Where(u => u.Type == User.UserType.Admin))
+            {
+                UserListString += user.ToString() + "\n";
+            }
+            return "There are " + Admins + " Admins\n" + UserListString;
+        }
+
+        //Returnerar en lista på de senaste posterna med troll som tag
+        public string ListLatestTroll()
+        {
+            string ListLatestTroll = posts.Where(p => p.Tags.Any(t => t == Post.PostTags.Troll)).OrderBy(p => p.CreateDate.Date).First().ToString();
+            return ListLatestTroll;
         }
         
     }

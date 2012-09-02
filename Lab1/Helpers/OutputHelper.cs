@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Lab1.Infrastructure;
 namespace Lab1.Helpers
 {
     /// <summary>
@@ -24,6 +24,24 @@ namespace Lab1.Helpers
                 returnString += "\n\tdictionary:\tPrints informaion about System.Collections.Generics.Dictionary";
                 returnString += "\n\tlist:\tPrints ten users formatted to strings";
                 returnString += "\n\tlistsorted:\tPrints ten users formatted to strings in Asc. order by name";
+                returnString += "\n\nlistlatesttroll:\tPrints the latest post with tag Troll";
+                returnString += "\n\tlistadmins:\tPrints all users that are admins";
+                returnString += "\n\tlogin admin:\tLoggin as admin";
+                returnString += "\n\tlogout:\tYou loggout";
+                returnString += "\n\texit:\tExits the program.";
+                return returnString;
+            }
+        }
+
+        public static string AdminCommandList
+        {
+            get
+            {
+                string returnString = "\n\nList of Commands:";
+                returnString += "\n\t?/help:\tPrints this list of commands.";
+                returnString += "\n\tname:[X]:\tCreate new user by writing name:[X].";
+                returnString += "\n\tsave:\tSaves the user if UserName is set";
+                returnString += "\n\tback:\tYou leave Create state";
                 returnString += "\n\texit:\tExits the program.";
                 return returnString;
             }
@@ -89,7 +107,7 @@ namespace Lab1.Helpers
         {
             get
             {
-                return string.Format("\n\nWelcome! {0}", EnterCommand);
+                return string.Format("Welcome! {0}".PrefixDoubleNewLine(), EnterCommand);
             }
         }
 
@@ -102,18 +120,9 @@ namespace Lab1.Helpers
             }
         }
 
-        public static string HowMany
+         public static void Put(string PutString)
         {
-             get
-            {
-                 return string.Format("\n\nHow Many Admins do you want? max(10)");
-            }
-           
-        }
-
-        public static string Put(string PutString)
-        {
-           return string.Format(PutString);
+            Console.WriteLine(PutString);
         }
     }
 }

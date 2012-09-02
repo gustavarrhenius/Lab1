@@ -7,7 +7,7 @@ namespace Lab1.Model
 {
     class Logger
     {
-
+        //Konstruktor för Klasse Logger
         public Logger() { }
         List<string> LogStrings = new List<string>();
         public void StringLog(string msg) {
@@ -17,7 +17,7 @@ namespace Lab1.Model
             LogStrings.Add(msg);
             }
 
-
+        //Override metod för ToString
         public override string ToString()
         {
             int Counter = 1;
